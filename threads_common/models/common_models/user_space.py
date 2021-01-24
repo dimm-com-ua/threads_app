@@ -10,16 +10,3 @@ class Author(models.Model):
 
     def __str__(self):
         return f"{self.name}"
-
-
-class Thread(models.Model):
-    name = models.CharField(max_length=170)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    content = models.TextField()
-    slug = models.CharField(max_length=64, default='')
-
-    class Meta:
-        db_table = 'th_thread'
-
-    def __str__(self):
-        return f"{self.name}"
