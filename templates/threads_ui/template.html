@@ -12,9 +12,25 @@
 </head>
 <body class="bg-light">
 <div class="bg-white container">
-    <h1>Prototyping a Web App with Django and Vue.js</h1>
 
-    <!-- Content -->
+    <div id="threads-app">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <router-link
+                        class="nav-link text-primary"
+                        to="/author/">Authors List</router-link>
+                </li>
+                <li class="nav-item">
+                    <router-link
+                        class="nav-link text-primary"
+                        to="/thread/">Threads List</router-link>
+                </li>
+            </ul>
+        </nav>
+        <br/>
+        <router-view></router-view>
+    </div>
 </div>
 
 <!-- Vue.js -->
@@ -36,6 +52,18 @@
     </div>
 </template>
 
+<template id="authors-list-template">
+    <div class="authors-list">
+        <h2>Authors list</h2>
+        <author-item
+                v-for="author in authors"
+                v-bind:key="author.slug"
+                v-bind:name="author.name"
+                v-bind:slug="author.slug"
+        ></author-item>
+    </div>
+</template>
+
 <template id="thread-item-template">
     <div class="thread-item">
         <span v-if="$route.params.slug">
@@ -45,7 +73,8 @@
                         v-html="$store.getters.getThreadBySlug($route.params.slug)['slug']"
                 ></router-link>
             </h3>
-            <div v-html="$srore.getters.getThreadBySlug($route.params.slug)['content']"></div>
+            <div v-html="$store.getters.getThreadBySlug($route.params.slug)['content']"></div>
+            <div v-html="$store.getters.getThreadBySlug($route.params.slug)['content']"></div>
         </span>
         <span v-else>
             <h3>
@@ -59,6 +88,74 @@
         </span>
     </div>
 </template>
+
+<script>
+    const store = new Vuex.Store({
+        state: {
+            authors: [
+                {% for author in authors %}
+                    {
+                        name: '{{ author.name }}',
+                        slug: '{{ author.slug }}',
+                    },
+                {% endfor %}
+            ],
+            threads: [
+                {% for thread in threads %}
+                    {
+                        content: '{{ thread.content }}',
+                        name: '{{ thread.name }}',
+                        slug: '{{ thread.slug }}'
+                    }
+                {% endfor %}
+            ]
+        },
+        getters: {
+            getThreadBySlug: (state) => (slug) => {
+                return state.threads.find(threads => threads.slug === slug)
+            },
+            getAuthorBySlug: (state) => (slug) => {
+                return state.authors.find(authors => authors.slug === slug)
+            }
+        }
+    })
+
+    ThreadList = Vue.component('threads-list', {
+        data: function() {
+            return { threads: store.state.threads }
+        },
+        template: '#threads-list-template'
+    })
+
+    ThreadItem = Vue.component('thread-item', {
+        delimiters: ['[[', ']]'],
+        props: ['name', 'slug', 'content'],
+        template: '#thread-item-template'
+    })
+
+    AuthorList = Vue.component('author-list', {
+        data: function() {
+            return { authors: store.state.authors }
+        },
+        template: '#authors-list-template'
+    })
+
+    const routes = [
+        { component: ThreadList, path: '/thread/', },
+        { component: ThreadList, path: '/thread/:slug/', },
+        { component: AuthorList, path: '/author/', }
+    ]
+
+    const router = new VueRouter({
+        mode: 'history',
+        routes: routes
+    })
+
+    const threadsApp = new Vue({
+        router,
+        store
+    }).$mount('#threads-app')
+</script>
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
