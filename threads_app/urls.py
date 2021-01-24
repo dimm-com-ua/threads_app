@@ -22,6 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('', threads_ui_views.frontend),
+    path('thread/', threads_ui_views.frontend),
+    path('author/', threads_ui_views.frontend),
     path('thread/<slug:slug>', threads_ui_views.frontend),
     path('author/<slug:slug>', threads_ui_views.frontend),
 ]

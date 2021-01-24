@@ -74,7 +74,6 @@
                 ></router-link>
             </h3>
             <div v-html="$store.getters.getThreadBySlug($route.params.slug)['content']"></div>
-            <div v-html="$store.getters.getThreadBySlug($route.params.slug)['content']"></div>
         </span>
         <span v-else>
             <h3>
@@ -84,6 +83,28 @@
                 ></router-link>
             </h3>
             <div v-html="content"></div>
+            <hr />
+        </span>
+    </div>
+</template>
+
+<template id="author-item-template">
+    <div class="author-item">
+        <span v-if="$route.params.slug">
+            <h3>
+                <router-link
+                        v-bind:to="'/author/' + $route.params.slug + '/'"
+                        v-html="$store.getters.getAuthorBySlug($route.params.slug)['slug']"
+                ></router-link>
+            </h3>
+        </span>
+        <span v-else>
+            <h3>
+                <router-link
+                        v-bind:to="'/author/' + slug + '/'"
+                        v-html="name"
+                ></router-link>
+            </h3>
             <hr />
         </span>
     </div>
@@ -140,10 +161,17 @@
         template: '#authors-list-template'
     })
 
+    AuthorItem = Vue.component('author-item', {
+        delimiters: ['[[', ']]'],
+        props: ['name', 'slug'],
+        template: '#author-item-template'
+    })
+
     const routes = [
         { component: ThreadList, path: '/thread/', },
         { component: ThreadList, path: '/thread/:slug/', },
-        { component: AuthorList, path: '/author/', }
+        { component: AuthorList, path: '/author/', },
+        { component: AuthorItem, path: '/author/:slug/', },
     ]
 
     const router = new VueRouter({
